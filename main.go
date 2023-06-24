@@ -3,20 +3,25 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/asim/go-micro/v3"
-	"github.com/asim/go-micro/v3/server"
-	"github.com/opentracing/opentracing-go"
-	"github.com/yejiabin9/common/domain/repository"
-	"path/filepath"
-
+	"github.com/asim/go-micro/plugins/registry/consul/v3"
 	ratelimit "github.com/asim/go-micro/plugins/wrapper/ratelimiter/uber/v3"
 	opentracing2 "github.com/asim/go-micro/plugins/wrapper/trace/opentracing/v3"
+	"github.com/asim/go-micro/v3"
 	"github.com/asim/go-micro/v3/registry"
+	"github.com/asim/go-micro/v3/server"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/opentracing/opentracing-go"
+	"github.com/sirupsen/logrus"
+	"github.com/yejiabin9/common"
+	"github.com/yejiabin9/svc/domain/repository"
+	service2 "github.com/yejiabin9/svc/domain/service"
+	"github.com/yejiabin9/svc/handler"
+	"github.com/yejiabin9/svc/proto/svc"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"path/filepath"
 	//hystrix2 "github.com/yejiabin9/svc/plugin/hystrix"
 	"strconv"
 )
@@ -52,7 +57,8 @@ func main() {
 	//2.配置中心，存放经常变动的变量
 	consulConfig, err := common.GetConsulConfig(consulHost, consulPort, "/micro/config")
 	if err != nil {
-		common.Error(err)
+		//common.Error(err)
+		logrus.Error(err)
 	}
 	//3.使用配置中心连接 mysql
 	mysqlInfo := common.GetMysqlFromConsul(consulConfig, "mysql")
@@ -61,7 +67,7 @@ func main() {
 	if err != nil {
 		//命令行输出下，方便查看错误
 		fmt.Println(err)
-		common.Fatal(err)
+		logrus.Error(err)
 	}
 	defer db.Close()
 	//禁止复表
@@ -121,7 +127,7 @@ func main() {
 	flag.Parse()
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
-		common.Fatal(err.Error())
+		logrus.Error(err.Error())
 	}
 
 	//在集群中外的配置
@@ -133,7 +139,8 @@ func main() {
 	// create the clientset
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		common.Fatal(err.Error())
+		logrus.Error(err.Error())
+		//common.Fatal(err.Error())
 	}
 
 	//7.创建服务
@@ -172,6 +179,6 @@ func main() {
 	// 启动服务
 	if err := service.Run(); err != nil {
 		//输出启动失败信息
-		common.Fatal(err)
+		logrus.Error(err)
 	}
 }
