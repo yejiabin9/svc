@@ -132,27 +132,27 @@ func (s *SvcDataService) DeleteFromK8s(svc2 *model.Svc) (err error) {
 	}
 }
 
-func (s *SvcDataService) AddSvc(svc *model.Svc) (int64, error) {
-	//TODO implement me
-	panic("implement me")
+// 插入
+func (u *SvcDataService) AddSvc(svc *model.Svc) (int64, error) {
+	return u.SvcRepository.CreateSvc(svc)
 }
 
-func (s SvcDataService) DeleteSvc(i int64) error {
-	//TODO implement me
-	panic("implement me")
+// 删除
+func (u *SvcDataService) DeleteSvc(svcID int64) error {
+	return u.SvcRepository.DeleteSvcByID(svcID)
 }
 
-func (s SvcDataService) UpDateSvc(svc *model.Svc) error {
-	//TODO implement me
-	panic("implement me")
+// 更新
+func (u *SvcDataService) UpDateSvc(svc *model.Svc) error {
+	return u.SvcRepository.UpdateSvc(svc)
 }
 
-func (s SvcDataService) FIndSvcById(i int64) (*model.Svc, error) {
-	//TODO implement me
-	panic("implement me")
+// 查找
+func (u *SvcDataService) FIndSvcById(svcID int64) (*model.Svc, error) {
+	return u.SvcRepository.FindSvcByID(svcID)
 }
 
-func (s SvcDataService) FIndAllSvc() ([]model.Svc, error) {
-	//TODO implement me
-	panic("implement me")
+// 查找
+func (u *SvcDataService) FIndAllSvc() ([]model.Svc, error) {
+	return u.SvcRepository.FindAll()
 }

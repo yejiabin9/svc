@@ -164,10 +164,10 @@ func main() {
 	service.Init()
 
 	//只能执行一遍
-	//err = repository.NewSvcRepository(db).InitTable()
-	//if err != nil {
-	//	common.Fatal(err)
-	//}
+	err = repository.NewSvcRepository(db).InitTable()
+	if err != nil {
+		logrus.Error(err)
+	}
 
 	// 注册句柄，可以快速操作已开发的服务
 	svcDataService := service2.NewSvcDataService(repository.NewSvcRepository(db), clientset)
